@@ -91,16 +91,20 @@ export default function ComponentCard({
 
         <Tabs.Content
           value="code"
-          className="flex-1 outline-none"
+          className="outline-none"
           tabIndex={-1}
         >
-          <div className="grid h-full grid-rows-2">
-            <CodeBlock
-              code={component.html.trim()}
-              lang="html"
-              label="html"
-            />
-            <div className="border-t-[1.5px] border-ink">
+          {/* Fixed-height code container — each panel scrolls internally
+              so long CSS no longer stretches the card or the grid. */}
+          <div className="flex flex-col" style={{ height: "380px" }}>
+            <div style={{ height: "150px" }}>
+              <CodeBlock
+                code={component.html.trim()}
+                lang="html"
+                label="html"
+              />
+            </div>
+            <div className="border-t-[1.5px] border-ink" style={{ height: "230px" }}>
               <CodeBlock
                 code={component.css.trim()}
                 lang="css"

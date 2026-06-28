@@ -87,9 +87,9 @@ export default function Nav() {
           <button
             type="button"
             onClick={() => setTheme(isDark ? "light" : "dark")}
-            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            aria-pressed={isDark}
-            title={isDark ? "Light mode (kiln → paper)" : "Dark mode (paper → kiln)"}
+            aria-label={mounted ? (isDark ? "Switch to light mode" : "Switch to dark mode") : "Toggle color theme"}
+            aria-pressed={mounted ? isDark : false}
+            title={mounted ? (isDark ? "Light mode (kiln → paper)" : "Dark mode (paper → kiln)") : "Toggle color theme"}
             className="inline-flex h-8 w-8 items-center justify-center border-ink bg-paper text-ink transition-colors hover:bg-rust hover:text-paper hover:border-rust"
           >
             {mounted ? (

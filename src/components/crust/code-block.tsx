@@ -25,7 +25,6 @@ export default function CodeBlock({ code, lang = "html", label }: CodeBlockProps
         if (mounted) setHtml(out);
       } catch {
         if (mounted) {
-          // Fallback: plain pre with mono font
           setHtml(`<pre class="shiki-fallback"><code>${escapeHtml(code)}</code></pre>`);
         }
       }
@@ -45,33 +44,40 @@ export default function CodeBlock({ code, lang = "html", label }: CodeBlockProps
     }
   };
 
+  const langLabel = label || lang;
+
   return (
-    <div className="relative h-full">
-      <button
-        type="button"
-        onClick={copy}
-        aria-label="Copy code"
-        className="absolute top-2.5 right-2.5 z-10 inline-flex items-center gap-1.5 border-ink bg-paper px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink transition-colors hover:bg-rust hover:text-paper"
-      >
-        {copied ? <Check size={12} /> : <Copy size={12} />}
-        {copied ? "copied" : "copy"}
-      </button>
-      {label && (
-        <div className="absolute top-2.5 left-3 z-10 font-mono text-[10px] uppercase tracking-[0.1em] text-paper/60">
-          {label}
-        </div>
-      )}
-      <div
-        className="h-full overflow-auto bg-ink text-paper"
-        style={{ padding: "44px 18px 18px" }}
-      >
+    <div className="relative flex h-full flex-col bg-ink">
+      {/* Header bar — label on left, copy button on right.
+          Sticky at top so it stays visible while scrolling code. */}
+      <div className="flex items-center justify-between border-b-[1.5px] border-ink bg-ink px-3 py-1.5">
+        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-paper/50">
+          {langLabel}
+        </span>
+        <button
+          type="button"
+          onClick={copy}
+          aria-label={`Copy ${langLabel} code`}
+          className={`inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] transition-colors ${
+            copied
+              ? "border-moss bg-moss text-paper"
+              : "border-paper/30 bg-transparent text-paper/70 hover:border-rust hover:bg-rust hover:text-paper"
+          }`}
+        >
+          {copied ? <Check size={11} /> : <Copy size={11} />}
+          {copied ? "copied" : `copy ${langLabel}`}
+        </button>
+      </div>
+
+      {/* Scrollable code area — fills remaining height, scrolls vertically. */}
+      <div className="flex-1 overflow-auto bg-ink" style={{ padding: "12px 16px" }}>
         {html ? (
           <div
-            className="shiki-crust [&_pre]:!bg-transparent [&_pre]:!p-0 [&_pre]:!m-0 [&_code]:!font-mono [&_code]:!text-[12.5px] [&_code]:!leading-[1.65]"
+            className="shiki-crust [&_pre]:!bg-transparent [&_pre]:!p-0 [&_pre]:!m-0 [&_code]:!font-mono [&_code]:!text-[12px] [&_code]:!leading-[1.6]"
             dangerouslySetInnerHTML={{ __html: html }}
           />
         ) : (
-          <pre className="font-mono text-[12.5px] leading-[1.65] whitespace-pre">
+          <pre className="font-mono text-[12px] leading-[1.6] whitespace-pre text-paper">
             <code>{code}</code>
           </pre>
         )}
