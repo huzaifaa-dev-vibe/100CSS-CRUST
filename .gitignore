@@ -53,3 +53,38 @@ server.log
 # Skills directory
 /skills/.env
 db/
+
+# ─── Crust project hygiene ───────────────────────────────────────
+# Internal scaffolding not part of the public Crust library
+/skills/
+/.zscripts/
+/examples/
+/download/
+/mini-services/
+/scripts/
+/prisma/
+Caddyfile
+
+# Dev artifacts
+*.pid
+dev.log
+dev.out.log
+server.log
+.claude
+.z-ai-config
+
+# Database
+db/
+*.db
+*.db-journal
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
