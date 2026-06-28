@@ -159,9 +159,10 @@ function Mark({ className }: { className: string }) {
       viewBox="0 0 20 20"
       fill="none"
       aria-hidden
+      style={{ color: "var(--ink)" }}
     >
-      <path d="M0 0H20" stroke="#0E0E0C" strokeWidth="1.5" />
-      <path d="M0 0V20" stroke="#0E0E0C" strokeWidth="1.5" />
+      <path d="M0 0H20" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M0 0V20" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
 }

@@ -6,9 +6,10 @@ import CodeBlock from "../code-block";
 const SECTIONS = [
   { id: "install", n: "01", label: "Install" },
   { id: "theming", n: "02", label: "Theming" },
-  { id: "tokens", n: "03", label: "Tokens" },
-  { id: "usage", n: "04", label: "Usage" },
-  { id: "contributing", n: "05", label: "Contributing" },
+  { id: "darkmode", n: "03", label: "Dark mode" },
+  { id: "tokens", n: "04", label: "Tokens" },
+  { id: "usage", n: "05", label: "Usage" },
+  { id: "contributing", n: "06", label: "Contributing" },
 ];
 
 const INSTALL_NPM = `npm install crust-css
@@ -67,6 +68,36 @@ mountCrust(document.body);
 // Or target a single component
 mountCrust(document.querySelector('.c-btn-fill-slide'));`;
 
+const DARKMODE_CSS = `/* The "kiln" dark theme — automatically applied when .dark
+   is on <html>. Every component adapts; you don't need to touch them. */
+.dark {
+  --ink: #ECE6D7;     /* warm off-white text */
+  --paper: #14110D;   /* charred warm near-black background */
+  --bone: #221E18;    /* lifted dark surface */
+  --rust: #E85D2C;    /* brighter rust for contrast on dark */
+  --moss: #8FAE82;
+  --ochre: #E5B96A;
+  --clay: #C49070;
+  --smoke: #8C857A;
+  color-scheme: dark;
+}`;
+
+const DARKMODE_AGENT = `# Three ways to switch themes — pick the one your agent can use.
+
+# 1. URL param (best for HTTP-only agents: curl, fetch, scrapers, LLM tools)
+curl "https://your-site.com/?theme=dark"
+curl "https://your-site.com/?theme=light"
+#  -> server-rendered HTML arrives with <html class="dark"> on first byte.
+#     No JavaScript execution required from the caller.
+
+# 2. Nav toggle (best for browser-driving agents: Playwright, agent-browser)
+#    Click the sun/moon button in the top-right. aria-label tells you the
+#    direction: "Switch to dark mode" or "Switch to light mode".
+
+# 3. Programmatic (best for embedded scripts / browser console)
+localStorage.setItem("theme", "dark"); location.reload();`;
+
+
 export default function DocsView() {
   const [active, setActive] = useState("install");
 
@@ -80,9 +111,9 @@ export default function DocsView() {
           The manual
         </h1>
         <p className="mt-3 max-w-[58ch] font-sans text-[15px] leading-[1.55] text-smoke">
-          Five short sections. Install Crust in your project, learn how to theme
-          it, study the design tokens, wire up interactivity, and contribute
-          back.
+          Six short sections. Install Crust in your project, learn how to theme
+          it, switch to dark mode, study the design tokens, wire up
+          interactivity, and contribute back.
         </p>
       </div>
 
@@ -144,9 +175,31 @@ export default function DocsView() {
             </div>
           </section>
 
+          {/* Dark mode */}
+          <section id="darkmode" className="scroll-mt-20 border-ink-t pt-10 pb-14">
+            <SectionHeader n="03" title="Dark mode" />
+            <p className="mb-6 font-sans text-[15px] leading-[1.65] text-ink">
+              Crust ships with a warm &quot;kiln&quot; dark theme — charred
+              paper background, warm off-white ink, and brighter rust/moss/ochre
+              accents tuned for contrast on dark surfaces. Toggle it from the
+              sun/moon button in the nav, or hit any page with{" "}
+              <code className="bg-bone px-1.5 py-0.5 font-mono text-[12.5px] text-ink">
+                ?theme=dark
+              </code>{" "}
+              in the URL. Every one of the 100 components adapts automatically
+              because they all read from the same eight CSS variables.
+            </p>
+            <div className="mb-4 h-[260px] border-ink">
+              <CodeBlock code={DARKMODE_CSS} lang="css" label="css" />
+            </div>
+            <div className="h-[260px] border-ink">
+              <CodeBlock code={DARKMODE_AGENT} lang="bash" label="agent access" />
+            </div>
+          </section>
+
           {/* Tokens */}
           <section id="tokens" className="scroll-mt-20 border-ink-t pt-10 pb-14">
-            <SectionHeader n="03" title="Tokens" />
+            <SectionHeader n="04" title="Tokens" />
             <p className="mb-6 font-sans text-[15px] leading-[1.65] text-ink">
               The full token system. Eight colors, three font families, one
               border weight, one radius. That&apos;s it. The discipline is the
@@ -205,7 +258,7 @@ export default function DocsView() {
 
           {/* Usage */}
           <section id="usage" className="scroll-mt-20 border-ink-t pt-10 pb-14">
-            <SectionHeader n="04" title="Usage" />
+            <SectionHeader n="05" title="Usage" />
             <p className="mb-6 font-sans text-[15px] leading-[1.65] text-ink">
               Each component is a self-contained HTML + CSS pair. Drop the
               markup anywhere, ensure the CSS is loaded, and you&apos;re done.
@@ -222,7 +275,7 @@ export default function DocsView() {
 
           {/* Contributing */}
           <section id="contributing" className="scroll-mt-20 border-ink-t pt-10 pb-14">
-            <SectionHeader n="05" title="Contributing" />
+            <SectionHeader n="06" title="Contributing" />
             <p className="mb-4 font-sans text-[15px] leading-[1.65] text-ink">
               Crust is open-source and PRs are welcome. Before contributing a
               new component, please follow these rules — they exist to keep the
