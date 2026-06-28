@@ -1,0 +1,293 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   CRUST DESIGN SYSTEM
+   "Components with a crust. Soft inside, sharp outside."
+   Swiss-grid meets editorial magazine. No slop.
+   ============================================================ */
+
+@theme inline {
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-bone: var(--bone);
+  --color-rust: var(--rust);
+  --color-moss: var(--moss);
+  --color-ochre: var(--ochre);
+  --color-clay: var(--clay);
+  --color-smoke: var(--smoke);
+
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --radius-crisp: 4px;
+  --radius-crisper: 2px;
+
+  --color-card: var(--bone);
+  --color-card-foreground: var(--ink);
+  --color-border: var(--ink);
+  --color-input: var(--ink);
+  --color-ring: var(--rust);
+  --color-primary: var(--ink);
+  --color-primary-foreground: var(--paper);
+  --color-secondary: var(--bone);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--bone);
+  --color-muted-foreground: var(--smoke);
+  --color-accent: var(--rust);
+  --color-accent-foreground: var(--paper);
+  --color-destructive: var(--rust);
+  --color-popover: var(--paper);
+  --color-popover-foreground: var(--ink);
+  --color-sidebar: var(--paper);
+  --color-sidebar-foreground: var(--ink);
+  --color-sidebar-border: var(--ink);
+  --color-sidebar-accent: var(--rust);
+  --color-sidebar-accent-foreground: var(--paper);
+  --color-sidebar-primary: var(--ink);
+  --color-sidebar-primary-foreground: var(--paper);
+  --color-sidebar-ring: var(--rust);
+}
+
+:root {
+  /* Crust palette — anti-slop, no purple/blue gradients, no glow */
+  --ink: #0E0E0C;
+  --paper: #F4F1EA;
+  --bone: #E8E3D6;
+  --rust: #C2410C;
+  --moss: #3F5B3A;
+  --ochre: #D4A24C;
+  --clay: #8C5A3C;
+  --smoke: #6B6660;
+
+  --radius: 4px;
+  --border-ink: 1.5px solid var(--ink);
+}
+
+@layer base {
+  * {
+    border-color: var(--ink);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "ss02", "cv11";
+    overflow-x: hidden;
+    position: relative;
+  }
+  /* Paper-grain SVG noise overlay at 4% opacity */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 200px 200px;
+    mix-blend-mode: multiply;
+  }
+  ::selection {
+    background: var(--rust);
+    color: var(--paper);
+  }
+  :focus-visible {
+    outline: 2px solid var(--rust);
+    outline-offset: 2px;
+  }
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--paper);
+    border-left: 1.5px solid var(--ink);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--ink);
+    border: 2px solid var(--paper);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--rust);
+  }
+}
+
+/* ============================================================
+   CRUST UTILITIES
+   ============================================================ */
+
+@layer utilities {
+  .border-ink {
+    border: 1.5px solid var(--ink);
+  }
+  .border-ink-t {
+    border-top: 1.5px solid var(--ink);
+  }
+  .border-ink-b {
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .border-ink-l {
+    border-left: 1.5px solid var(--ink);
+  }
+  .border-ink-r {
+    border-right: 1.5px solid var(--ink);
+  }
+  .bg-paper {
+    background-color: var(--paper);
+  }
+  .bg-bone {
+    background-color: var(--bone);
+  }
+  .bg-ink {
+    background-color: var(--ink);
+  }
+  .bg-rust {
+    background-color: var(--rust);
+  }
+  .bg-moss {
+    background-color: var(--moss);
+  }
+  .bg-ochre {
+    background-color: var(--ochre);
+  }
+  .bg-clay {
+    background-color: var(--clay);
+  }
+  .text-ink {
+    color: var(--ink);
+  }
+  .text-paper {
+    color: var(--paper);
+  }
+  .text-rust {
+    color: var(--rust);
+  }
+  .text-moss {
+    color: var(--moss);
+  }
+  .text-ochre {
+    color: var(--ochre);
+  }
+  .text-clay {
+    color: var(--clay);
+  }
+  .text-smoke {
+    color: var(--smoke);
+  }
+  .font-display {
+    font-family: var(--font-display);
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+  .small-caps {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+  }
+  .tracking-tightest {
+    letter-spacing: -0.04em;
+  }
+  .grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+  }
+  .numbered-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--smoke);
+  }
+  .hairline {
+    border-color: var(--ink);
+    border-width: 1.5px;
+  }
+}
+
+/* ============================================================
+   CRUST COMPONENT ANIMATIONS
+   Shared keyframes used across the 100 components
+   ============================================================ */
+
+@keyframes crust-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes crust-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.85); opacity: 0.7; }
+}
+@keyframes crust-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes crust-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes crust-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes crust-scan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+@keyframes crust-fill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+@keyframes crust-dot-wave {
+  0%, 60%, 100% { transform: scaleY(0.4); }
+  30% { transform: scaleY(1); }
+}
+@keyframes crust-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes crust-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+@keyframes crust-ripple {
+  0% { transform: scale(0); opacity: 0.6; }
+  100% { transform: scale(4); opacity: 0; }
+}
+@keyframes crust-glitch {
+  0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+  20% { clip-path: inset(20% 0 60% 0); transform: translate(-2px, 1px); }
+  40% { clip-path: inset(50% 0 30% 0); transform: translate(2px, -1px); }
+  60% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, 2px); }
+  80% { clip-path: inset(70% 0 10% 0); transform: translate(1px, -2px); }
+}
+@keyframes crust-scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* Lenis smooth scroll */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
