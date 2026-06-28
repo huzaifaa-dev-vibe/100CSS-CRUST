@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
 import ThemeProvider from "@/components/crust/theme-provider";
 import { themeInitScript } from "@/lib/crust/theme-init";
 
@@ -86,7 +85,6 @@ export default function RootLayout({
         className={`${fraunces.variable} ${interTight.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <ThemeProvider>{children}</ThemeProvider>
-        <Toaster />
       </body>
     </html>
   );
