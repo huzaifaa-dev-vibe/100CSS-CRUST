@@ -1,12 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
-  /* config options here */
+  // No `output: "standalone"` — that mode is for Docker/Node self-hosted
+  // deployments and breaks Vercel/Netlify's serverless adapters.
+  // Vercel auto-detects Next.js and handles output itself.
+  reactStrictMode: true,
   typescript: {
-    ignoreBuildErrors: true,
+    // Don't ignore type errors — surface them at build time so platforms
+    // can report them clearly instead of failing silently
+    ignoreBuildErrors: false,
   },
-  reactStrictMode: false,
 };
 
 export default nextConfig;
