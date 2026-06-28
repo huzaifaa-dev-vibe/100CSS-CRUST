@@ -129,6 +129,9 @@ export default function HomeView() {
         />
       </section>
 
+      {/* ───── ANNOUNCEMENT BANNER ───── */}
+      <AnnouncementBanner />
+
       {/* ───── STATS ───── */}
       <section className="border-ink-t border-ink-b bg-paper">
         <div className="mx-auto grid max-w-[1400px] grid-cols-2 md:grid-cols-4">
@@ -294,5 +297,121 @@ export default function HomeView() {
         </div>
       </section>
     </div>
+  );
+}
+
+/* ============================================================
+   Announcement banner — two-phase rollout notice
+   ============================================================ */
+function AnnouncementBanner() {
+  return (
+    <section className="border-ink-b bg-bone">
+      <div className="mx-auto max-w-[1400px] px-5 py-10 md:px-8 md:py-12">
+        {/* Section label */}
+        <div className="mb-6 flex items-center gap-3">
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-rust">
+            ✶ Notice
+          </span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-smoke">
+            · posted 28 June 2026 · v1.0.2
+          </span>
+        </div>
+
+        <h2 className="mb-6 max-w-[22ch] font-display text-[36px] font-medium leading-[0.95] tracking-tight md:text-[52px]">
+          Two changes coming in July.
+        </h2>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {/* Phase 1 — User auth */}
+          <article className="border-ink bg-paper p-6">
+            <header className="mb-3 flex items-baseline justify-between gap-3">
+              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-rust">
+                01 — July 5
+              </span>
+              <span className="border-ink bg-ochre px-2 py-0.5 font-mono text-[9.5px] uppercase tracking-[0.1em] text-ink">
+                User accounts
+              </span>
+            </header>
+            <h3 className="mb-2 font-display text-[26px] font-medium leading-tight tracking-tight text-ink">
+              Authentication for everyone
+            </h3>
+            <p className="font-sans text-[13.5px] leading-[1.55] text-smoke">
+              We&apos;re adding user authentication. You&apos;ll be able to sign
+              in, save favorite components, sync your theme across devices, and
+              leave feedback on individual effects. Read-only access to the
+              component library stays free for everyone — no account required to
+              browse or copy code.
+            </p>
+          </article>
+
+          {/* Phase 2 — Developer accounts */}
+          <article className="border-ink bg-ink p-6 text-paper">
+            <header className="mb-3 flex items-baseline justify-between gap-3">
+              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ochre">
+                02 — July 10
+              </span>
+              <span className="border-paper bg-rust px-2 py-0.5 font-mono text-[9.5px] uppercase tracking-[0.1em] text-paper">
+                Developer accounts
+              </span>
+            </header>
+            <h3 className="mb-2 font-display text-[26px] font-medium leading-tight tracking-tight">
+              Contribute your own components
+            </h3>
+            <p className="font-sans text-[13.5px] leading-[1.55] text-paper/70">
+              Developer authentication opens. Sign in as a contributor, submit
+              your own component (HTML + CSS + preview), and it goes into a
+              review queue. The admin can edit your title or code before
+              publishing. Developers also get authority to propose new
+              categories and tags.
+            </p>
+          </article>
+        </div>
+
+        {/* Workflow detail strip */}
+        <div className="mt-6 border-ink-t bg-bone pt-6">
+          <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.14em] text-smoke">
+            How the contribution pipeline will work
+          </p>
+          <ol className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            {[
+              ["01", "Submit", "Developer signs in and submits component (HTML + CSS + live preview) through the in-app form."],
+              ["02", "Queue", "Submission enters a review queue. Status visible to the contributor in their dashboard."],
+              ["03", "Review", "Admin reviews the code, may edit the title or adjust the code to fit the crust method (6 rules)."],
+              ["04", "Publish", "Approved component goes live with the developer credited. Developer can also propose new categories and tags."],
+            ].map(([n, title, body]) => (
+              <li key={n} className="border-ink-t pt-3">
+                <div className="flex items-baseline gap-2">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-rust">
+                    {n}
+                  </span>
+                  <span className="font-display text-[17px] font-medium tracking-tight text-ink">
+                    {title}
+                  </span>
+                </div>
+                <p className="mt-1.5 font-sans text-[12.5px] leading-[1.5] text-smoke">
+                  {body}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {/* Fine print */}
+        <p className="mt-6 max-w-[70ch] font-sans text-[12px] leading-[1.5] text-smoke">
+          The library itself — all 100 components, the design system, dark mode,
+          the docs — stays open-source under MIT. These accounts are for the
+          hosted site experience and the contribution pipeline. Self-hosting
+          remains free and unrestricted. Questions?{" "}
+          <a
+            href="https://github.com/huzaifaa-dev-vibe/100CSS-CRUST/discussions"
+            target="_blank"
+            rel="noreferrer"
+            className="text-rust underline decoration-rust/40 underline-offset-2 hover:decoration-rust"
+          >
+            Open a discussion →
+          </a>
+        </p>
+      </div>
+    </section>
   );
 }

@@ -13,30 +13,95 @@ const STATUSES = [
   "polishing the crust…",
 ];
 
+const WORD = "Crust";
+
+// Typewriter cadence.
+// Phase 1 — "typing":   letters appear L→R, caret follows the last visible letter.
+//                       Caret is visible ONLY in this phase.
+// Phase 2 — "holding":  full word sits, no caret, no animation.
+// Phase 3 — "fading-out": whole word fades out (opacity 1→0), no caret.
+// Phase 4 — "empty":    nothing visible, brief pause, no caret.
+// Phase 5 — "fading-in": whole word fades back in (opacity 0→1), no caret.
+// → loop back to "holding".
+//
+// The caret only ever exists during the initial "typing" phase. After that,
+// the word gently pulses (fade out / fade in) for the rest of the 7s loader.
+const TYPE_MS = 130;        // ms per letter when typing forward
+const HOLD_MS = 1800;       // hold the complete word, no caret
+const FADE_MS = 500;        // fade out / fade in duration
+const EMPTY_MS = 300;       // pause while empty between fades
+
+type Phase = "typing" | "holding" | "fading-out" | "empty" | "fading-in";
+
 export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   const [progress, setProgress] = useState(0);
   const [statusIdx, setStatusIdx] = useState(0);
-  const [revealed, setRevealed] = useState(0);
-  const word = "Crust";
+  const [typedCount, setTypedCount] = useState(0); // 0..WORD.length
+  const [phase, setPhase] = useState<Phase>("typing");
+
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<number>(0);
+  const phaseStartRef = useRef<number>(0);
   const DURATION = 7000;
 
   useEffect(() => {
     startRef.current = performance.now();
+    phaseStartRef.current = startRef.current;
+    let currentCount = 0;
+    let currentPhase: Phase = "typing";
+
     const tick = (now: number) => {
       const elapsed = now - startRef.current;
       const pct = Math.min(100, (elapsed / DURATION) * 100);
       setProgress(pct);
-      const lettersShown = Math.min(
-        word.length,
-        Math.floor((elapsed / 2200) * word.length),
-      );
-      setRevealed(lettersShown);
+
+      const phaseElapsed = now - phaseStartRef.current;
+
+      if (currentPhase === "typing") {
+        // Reveal one letter every TYPE_MS — caret follows the last visible letter
+        const target = Math.min(WORD.length, Math.floor(phaseElapsed / TYPE_MS) + 1);
+        if (target !== currentCount) {
+          currentCount = target;
+          setTypedCount(target);
+        }
+        if (currentCount >= WORD.length) {
+          // Word complete — drop the caret, hold the clean word
+          currentPhase = "holding";
+          phaseStartRef.current = now;
+          setPhase("holding");
+        }
+      } else if (currentPhase === "holding") {
+        if (phaseElapsed >= HOLD_MS) {
+          currentPhase = "fading-out";
+          phaseStartRef.current = now;
+          setPhase("fading-out");
+        }
+      } else if (currentPhase === "fading-out") {
+        if (phaseElapsed >= FADE_MS) {
+          currentPhase = "empty";
+          phaseStartRef.current = now;
+          setPhase("empty");
+        }
+      } else if (currentPhase === "empty") {
+        if (phaseElapsed >= EMPTY_MS) {
+          currentPhase = "fading-in";
+          phaseStartRef.current = now;
+          setPhase("fading-in");
+        }
+      } else if (currentPhase === "fading-in") {
+        if (phaseElapsed >= FADE_MS) {
+          currentPhase = "holding";
+          phaseStartRef.current = now;
+          setPhase("holding");
+        }
+      }
+
       if (pct < 100) {
         rafRef.current = requestAnimationFrame(tick);
       } else {
-        setRevealed(word.length);
+        // Loader done — ensure full word is visible, then exit
+        setTypedCount(WORD.length);
+        setPhase("holding");
         setTimeout(onDone, 450);
       }
     };
@@ -44,7 +109,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, []);
+  }, [onDone]);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -56,9 +121,21 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
   const skip = () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setProgress(100);
-    setRevealed(word.length);
+    setTypedCount(WORD.length);
+    setPhase("holding");
     setTimeout(onDone, 200);
   };
+
+  // Caret is visible ONLY during the active "typing" phase.
+  const showCaret = phase === "typing";
+
+  // Word opacity by phase. We set a target opacity and let CSS transition
+  // handle the fade smoothly (re-renders happen via rAF state updates).
+  const wordOpacity =
+    phase === "empty" ? 0 :
+    phase === "fading-out" ? 0 :
+    phase === "fading-in" ? 1 :
+    1; // typing, holding
 
   return (
     <AnimatePresence>
@@ -72,35 +149,78 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
         <CornerMarks />
 
         <div className="relative flex items-end justify-center">
+          {/*
+            Two-layer structure so the caret can follow the last visible
+            letter left-to-right while the word stays centered:
+
+            1. GHOST layer (visibility:hidden) — renders the full word
+               invisibly to reserve the correct width for centering.
+
+            2. VISIBLE layer (position:absolute, left:0) — renders only
+               the typed letters + caret, left-aligned over the ghost.
+               As letters appear, the caret naturally moves right.
+          */}
           <h1
-            className="font-display leading-none tracking-tightest"
+            className="relative font-display leading-none tracking-tightest"
             style={{ fontSize: "clamp(96px, 18vw, 240px)", fontWeight: 400 }}
             aria-label="Crust"
           >
-            {word.split("").map((ch, i) => (
-              <span
-                key={i}
-                style={{
-                  display: "inline-block",
-                  opacity: i < revealed ? 1 : 0,
-                  transform: i < revealed ? "translateY(0)" : "translateY(0.4em)",
-                  transition:
-                    "opacity 220ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1)",
-                }}
-              >
-                {ch}
-              </span>
-            ))}
+            {/* Ghost — reserves full word width for centering */}
+            <span aria-hidden style={{ visibility: "hidden", whiteSpace: "pre" }}>
+              {WORD}
+            </span>
+
+            {/* Visible letters + caret — absolutely positioned over the ghost */}
             <span
               aria-hidden
-              className="inline-block ml-1 bg-ink"
               style={{
-                width: "0.08em",
-                height: "0.78em",
-                marginBottom: "0.12em",
-                animation: "crust-blink 600ms steps(1) infinite",
+                position: "absolute",
+                left: 0,
+                top: 0,
+                whiteSpace: "pre",
+                opacity: wordOpacity,
+                transition: `opacity ${FADE_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
               }}
-            />
+            >
+              {WORD.split("").map((ch, i) => {
+                const visible = i < typedCount;
+                if (!visible) return null; // unrendered = takes zero width
+                return (
+                  <span
+                    key={i}
+                    style={{
+                      display: "inline-block",
+                      opacity: visible ? 1 : 0,
+                      transform: visible ? "translateY(0)" : "translateY(0.4em)",
+                      transition:
+                        "opacity 180ms ease, transform 180ms cubic-bezier(0.22, 1, 0.36, 1)",
+                    }}
+                  >
+                    {ch}
+                  </span>
+                );
+              })}
+              {/*
+                Caret — only renders during the "typing" phase.
+                Because invisible letters are not rendered at all (above),
+                the caret sits immediately after the last VISIBLE letter,
+                moving left → right as letters appear.
+              */}
+              {showCaret && (
+                <span
+                  aria-hidden
+                  className="inline-block bg-ink"
+                  style={{
+                    width: "0.08em",
+                    height: "0.78em",
+                    marginBottom: "0.12em",
+                    marginLeft: "0.04em",
+                    animation: "crust-blink 600ms steps(1) infinite",
+                    verticalAlign: "baseline",
+                  }}
+                />
+              )}
+            </span>
           </h1>
         </div>
 

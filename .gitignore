@@ -88,3 +88,5 @@ Thumbs.db
 *.swp
 *.swo
 *~
+upload/
+upload/
